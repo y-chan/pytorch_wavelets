@@ -352,6 +352,10 @@ class AFB2D(Function):
         if ctx.needs_input_grad[0]:
             mode = ctx.mode
             h0_row, h1_row, h0_col, h1_col = ctx.saved_tensors
+            h0_row = h0_row.to(dtype=low.dtype)
+            h1_row = h1_row.to(dtype=low.dtype)
+            h0_col = h0_col.to(dtype=low.dtype)
+            h1_col = h1_col.to(dtype=low.dtype)
             lh, hl, hh = torch.unbind(highs, dim=2)
             lo = sfb1d(low, lh, h0_col, h1_col, mode=mode, dim=2)
             hi = sfb1d(hl, hh, h0_col, h1_col, mode=mode, dim=2)
@@ -410,6 +414,8 @@ class AFB1D(Function):
         if ctx.needs_input_grad[0]:
             mode = ctx.mode
             h0, h1 = ctx.saved_tensors
+            h0 = h0.to(dtype=dx0.dtype)
+            h1 = h1.to(dtype=dx1.dtype)
 
             # Make grads 4d
             dx0 = dx0[:, :, None, :]
@@ -685,6 +691,10 @@ class SFB2D(Function):
         if ctx.needs_input_grad[0]:
             mode = ctx.mode
             g0_row, g1_row, g0_col, g1_col = ctx.saved_tensors
+            g0_row = g0_row.to(dtype=dy.dtype)
+            g1_row = g1_row.to(dtype=dy.dtype)
+            g0_col = g0_col.to(dtype=dy.dtype)
+            g1_col = g1_col.to(dtype=dy.dtype)
             dx = afb1d(dy, g0_row, g1_row, mode=mode, dim=3)
             dx = afb1d(dx, g0_col, g1_col, mode=mode, dim=2)
             s = dx.shape
@@ -734,6 +744,8 @@ class SFB1D(Function):
         if ctx.needs_input_grad[0]:
             mode = ctx.mode
             g0, g1, = ctx.saved_tensors
+            g0 = g0.to(dtype=dy.dtype)
+            g1 = g1.to(dtype=dy.dtype)
             dy = dy[:, :, None, :]
 
             dx = afb1d(dy, g0, g1, mode=mode, dim=3)
